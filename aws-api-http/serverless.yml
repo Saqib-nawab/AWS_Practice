@@ -6,12 +6,11 @@ service: aws-api-http
 provider:
   name: aws
   runtime: nodejs20.x
-  region: us-east-2
 
 functions:
   hello:
-    handler: hello.handler
+    handler: handler.hello
     events:
       - httpApi:
-          path: /hello
-          method: GET
+          path: /
+          method: get
