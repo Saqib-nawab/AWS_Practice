@@ -9,8 +9,14 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: hello.handler
     events:
       - httpApi:
           path: /
+          method: get
+  bye:
+    handler: bye.handler
+    events:
+      - httpApi:
+          path: /bye
           method: get
