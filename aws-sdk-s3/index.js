@@ -1,6 +1,19 @@
 require('dotenv').config();
-const { GetObjectCommand, S3Client, PutObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+const { GetObjectCommand, S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
+
+
+// In this code:
+
+// We import DeleteObjectCommand from the AWS SDK.
+// We create a new function deleteObject to delete an object from the S3 bucket saqib - private.
+// The deleteObject function uses DeleteObjectCommand to delete the specified object and logs a success message.
+// We call the deleteObject function in the init function, first listing the objects, then deleting the first object in the list(if any), and finally listing the objects again to show the updated list.
+
+
+
+
 
 // this is the client who is requesting something from bucket
 const s3Client = new S3Client({
@@ -50,6 +63,23 @@ async function listObjects() {
         throw error;
     }
 }
+
+// New function to delete an object from the S3 bucket
+async function deleteObject(key) {
+    const command = new DeleteObjectCommand({
+        Bucket: 'saqib-private',
+        Key: key
+    });
+
+    try {
+        const response = await s3Client.send(command);
+        console.log('Successfully deleted object:', key);
+        return response;
+    } catch (error) {
+        console.error('Error deleting object:', error);
+        throw error;
+    }
+}
 async function init() {
     console.log('Image URL is:', await getObjectURL('SaqibNawab.jpeg'));
 
@@ -58,7 +88,19 @@ async function init() {
 
     const objectKeys = await listObjects();
     console.log('Objects in the bucket:', objectKeys);
+
+    if (objectKeys.length > 0) {
+        console.log('Deleting object:', objectKeys[0]);
+        await deleteObject(objectKeys[0]);
+
+        const updatedObjectKeys = await listObjects();
+        console.log('Objects in the bucket after deletion:', updatedObjectKeys);
+    }
+
 }
 
 
 init();
+
+
+
